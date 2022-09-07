@@ -6,7 +6,7 @@ import shutil
 import time
 import requests
 
-# 图片存放位置在桌面/hero
+# 图片存放位置,桌面/hero
 file_name = r"C:\Users\admin\Desktop\hero"
 # 删除原有存放图片的文件夹，然后创建新的文件夹
 if os.path.exists(file_name):
@@ -26,21 +26,21 @@ hero_num = len(hero_json)
 hero_list = {}
 for i in range(hero_num):
     hero_list[hero_json[i]['name']] = hero_json[i]['heroId']
-
 # 按英雄名称创建文件夹
 for name,hero_id in hero_list.items():
+
     hero_file = file_name+'\\'+name
     os.mkdir(hero_file)
-
     # 根据英雄ID获取英雄皮肤id列表
     skin_id_url = 'https://game.gtimg.cn/images/lol/act/img/js/hero/' + hero_id +'.js?ts=2770132'
     skin_id_info1 = requests.get(skin_id_url).text
-    # 解决类似内容  "凯尔乘坐“X40”战机..."问题引号
+    # 解决类似内容  "凯尔乘坐“X40”战机..."问题
     if '\\"'in skin_id_info1:
-        skin_id_info1 = skin_id_info1.replace('\\"','___')
+        skin_id_info1 = skin_id_info1.replace('\\"','____')
+
     skin_id_info = skin_id_info1.encode('utf-8').decode('unicode_escape')
-    # 一个英雄的所有皮肤信息
     skin_id_json = json.loads(skin_id_info, strict=False)['skins']
+
 
     # 一个英雄的皮肤
     skin_num = len(skin_id_json)
@@ -66,11 +66,10 @@ for name,hero_id in hero_list.items():
         store_img_name = hero_file + '\\' + img_name + '.jpg'
         img = requests.get(img_url,stream=True)
 
-        # 保存图片到文件，下载一张休息0.5秒
+        # 保存图片到文件
         time.sleep(0.51)
+        chunk_size = 100
+        size = 0
         with open(store_img_name,'wb') as f:
             f.write(img.content)
             print('正在下载===',skin_id_json[i]['name'])
-
-
-
